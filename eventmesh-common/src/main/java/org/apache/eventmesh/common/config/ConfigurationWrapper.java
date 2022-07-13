@@ -61,9 +61,13 @@ public class ConfigurationWrapper {
     };
 
     public ConfigurationWrapper(String directoryPath, String fileName, boolean reload) {
-        this.directoryPath = directoryPath;
+        this.directoryPath = directoryPath
+                .replace('/', File.separator.charAt(0))
+                .replace('\\', File.separator.charAt(0));
         this.fileName = fileName;
-        this.file = directoryPath + File.separator + fileName;
+        this.file = (directoryPath + File.separator + fileName)
+                .replace('/', File.separator.charAt(0))
+                .replace('\\', File.separator.charAt(0));
         this.reload = reload;
         init();
     }
@@ -80,9 +84,9 @@ public class ConfigurationWrapper {
     }
 
     private void load() {
-        try {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             logger.info("loading config: {}", file);
-            properties.load(new BufferedReader(new FileReader(file)));
+            properties.load(reader);
         } catch (IOException e) {
             logger.error("loading properties [{}] error", file, e);
         }
